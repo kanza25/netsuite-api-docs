@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSuite Integration API Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            background: white;
+            margin: 2rem auto;
+            padding: 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .endpoint {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .endpoint:last-child {
+            border-bottom: none;
+        }
+
+        .endpoint-header {
+            background: #f9fafb;
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            transition: background 0.2s;
+        }
+
+        .endpoint-header:hover {
+            background: #f3f4f6;
+        }
+
+        .endpoint-header.active {
+            background: #dbeafe;
+        }
+
+        .method-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 60px;
+            padding: 0.4rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .method-get {
+            background: #22c55e;
+            color: white;
+        }
+
+        .method-post {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .endpoint-url {
+            flex: 1;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #1f2937;
+            word-break: break-all;
+        }
+
+        .endpoint-toggle {
+            color: #6b7280;
+            transition: transform 0.3s;
+        }
+
+        .endpoint-toggle.active {
+            transform: rotate(180deg);
+        }
+
+        .endpoint-body {
+            display: none;
+            padding: 2rem;
+            background: white;
+        }
+
+        .endpoint-body.active {
+            display: block;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .param-table th {
+            background: #f9fafb;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .param-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+        }
+
+        .param-name {
+            font-family: 'Courier New', monospace;
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        .param-type {
+            font-family: 'Courier New', monospace;
+            color: #7c3aed;
+            font-size: 0.8rem;
+        }
+
+        .no-params {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 6px;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .media-type-select {
+            width: 100%;
+            max-width: 300px;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: white;
+            margin: 0.5rem 0 1rem 0;
+        }
+
+        .response-section {
+            margin-top: 2rem;
+        }
+
+        .response-code {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-left: 4px solid #22c55e;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 6px;
+        }
+
+        .response-code.error {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-left-color: #f59e0b;
+        }
+
+        .response-code-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .response-status {
+            font-weight: 700;
+            color: #059669;
+        }
+
+        .response-code.error .response-status {
+            color: #d97706;
+        }
+
+        .response-desc {
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .code-block {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 1.5rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.7;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+        }
+
+        .notes {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .notes h4 {
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .notes ul {
+            margin-left: 1.5rem;
+            color: #1e3a8a;
+        }
+
+        .notes li {
+            margin: 0.5rem 0;
+        }
+
+        .property {
+            color: #22c55e;
+        }
+
+        .string {
+            color: #fbbf24;
+        }
+
+        .number {
+            color: #60a5fa;
+        }
+
+        .boolean {
+            color: #a78bfa;
+        }
+
+        .try-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+        }
+
+        .try-button:hover {
+            background: #2563eb;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .endpoint-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .endpoint-url {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+    <script>
+        function toggleEndpoint(id) {
+            const header = document.getElementById('header-' + id);
+            const body = document.getElementById('body-' + id);
+            const toggle = document.getElementById('toggle-' + id);
+            
+            header.classList.toggle('active');
+            body.classList.toggle('active');
+            toggle.classList.toggle('active');
+        }
+
+        window.onload = function() {
+            // Open Authentication section by default
+            toggleEndpoint('auth');
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>NetSuite Integration API Documentation</h1>
+            <p class="subtitle">OAuth 1.0 Authentication & Integration Endpoints</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- OVERVIEW SECTION -->
+        <div style="background: white; margin: 2rem auto; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h2 style="color: #1f2937; font-size: 1.75rem; margin-bottom: 1rem;">Overview</h2>
+            <p style="color: #4b5563; line-height: 1.8; margin-bottom: 1rem;">
+                This documentation provides comprehensive details for integrating with NetSuite's endpoints. These APIs enable you to retrieve invoice and payment data from your NetSuite environment.
+            </p>
+            <p style="color: #4b5563; line-height: 1.8; margin-bottom: 1rem;">
+                All endpoints require OAuth 1.0 authentication and are designed to work seamlessly with API clients like Postman. The APIs return data in JSON format and support standard HTTP response codes.
+            </p>
+            <div style="background: #f0f9ff; border-left: 4px solid #0284c7; padding: 1rem; margin: 1rem 0; border-radius: 4px;">
+                <h4 style="color: #0c4a6e; margin-bottom: 0.5rem; font-weight: 600;">Available Endpoints:</h4>
+                <ul style="margin-left: 1.5rem; color: #075985; line-height: 1.8;">
+                    <li><strong>Invoice Payments:</strong> Retrieve invoices with their associated payment records</li>
+                    <li><strong>Invoices:</strong> Retrieve invoice records with detailed line item information</li>
+                </ul>
+            </div>
+            <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin: 1rem 0; border-radius: 4px;">
+                <h4 style="color: #92400e; margin-bottom: 0.5rem; font-weight: 600;">Before You Begin:</h4>
+                <ul style="margin-left: 1.5rem; color: #78350f; line-height: 1.8;">
+                    <li>Ensure you have valid OAuth 1.0 credentials (Consumer Key, Consumer Secret, Token ID, Token Secret)</li>
+                    <li>Configure authentication in your API client (Postman recommended)</li>
+                    <li>Manually add required headers (Content-Type and Accept) to each request</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- AUTHENTICATION SECTION -->
+            <div class="endpoint">
+                <div class="endpoint-header" id="header-auth" onclick="toggleEndpoint('auth')">
+                    <span class="method-badge method-post" style="background: #8b5cf6;">AUTH</span>
+                    <span class="endpoint-url">OAuth 1.0 Authentication Setup</span>
+                    <span class="endpoint-toggle" id="toggle-auth">▼</span>
+                </div>
+                <div class="endpoint-body" id="body-auth">
+                    <div class="section">
+                        <div class="section-title">OAuth 1.0 Configuration for Postman</div>
+                        <p style="margin-bottom: 1rem; color: #6b7280;">All NetSuite integration endpoints require OAuth 1.0 authentication. Configure the following parameters in Postman before making any API requests:</p>
+                        
+                        <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin: 1rem 0; border-radius: 4px;">
+                            <p style="font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">⚠️ Important:</p>
+                            <p style="color: #78350f; font-size: 0.9rem;">Keep these credentials secure. Never commit them to version control or share them publicly.</p>
+                        </div>
+
+                        <table class="param-table" style="margin-top: 1.5rem;">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Value</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">Auth Type</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">OAuth 1.0</code></td>
+                                    <td>Authentication method</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">Account</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">11375429_SB2</code></td>
+                                    <td>NetSuite account ID (Sandbox)</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">Consumer Key</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">String</code></td>
+                                    <td>OAuth consumer key from NetSuite</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">Consumer Secret</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">String</code></td>
+                                    <td>OAuth consumer secret</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">Access Token (Token ID)</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">String</code></td>
+                                    <td>OAuth access token</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">Token Secret</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">String</code></td>
+                                    <td>OAuth token secret</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">Signature Method</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">HMAC-SHA256</code></td>
+                                    <td>Signature hashing algorithm</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div style="margin-top: 2rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 1rem; color: #1f2937;">Complete OAuth 1.0 Credentials:</h4>
+                            <div class="code-block"><pre>{
+  <span class="property">"account"</span>: <span class="string">"11375429_SB2"</span>,
+  <span class="property">"consumerKey"</span>: <span class="string">"String"</span>,
+  <span class="property">"consumerSecret"</span>: <span class="string">"String"</span>,
+  <span class="property">"tokenId"</span>: <span class="string">"String"</span>,
+  <span class="property">"tokenSecret"</span>: <span class="string">"String"</span>,
+  <span class="property">"signatureMethod"</span>: <span class="string">"HMAC-SHA256"</span>
+}</pre></div>
+                        </div>
+
+                        <div style="margin-top: 2rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 1rem; color: #1f2937;">Postman Configuration Steps:</h4>
+                            <ol style="margin-left: 1.5rem; color: #374151; line-height: 1.8;">
+                                <li>Open your request in Postman</li>
+                                <li>Go to the <strong>Authorization</strong> tab</li>
+                                <li>Select <strong>OAuth 1.0</strong> from the Type dropdown</li>
+                                <li>Fill in the credentials as shown above</li>
+                                <li>Set <strong>Add auth data to:</strong> "Request Headers"</li>
+                                <li>Enable these checkboxes:
+                                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                        <li>✅ Add empty parameters to signature</li>
+                                        <li>✅ Encode the parameters in the Authorization header</li>
+                                    </ul>
+                                </li>
+                                <li><strong>IMPORTANT:</strong> Go to the <strong>Headers</strong> tab and manually add:
+                                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                        <li><code>Content-Type: application/json</code></li>
+                                        <li><code>Accept: application/json</code></li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>
+
+                        <div class="notes" style="margin-top: 2rem;">
+                            <h4>Important Notes</h4>
+                            <ul>
+                                <li>This is a <strong>Sandbox (SB2)</strong> environment configuration</li>
+                                <li>OAuth 1.0 signatures are automatically generated by Postman</li>
+                                <li>The signature method must be set to <strong>HMAC-SHA256</strong></li>
+                                <li>The Authorization header is automatically added when OAuth 1.0 is configured</li>
+                                <li><strong>Headers must be manually added</strong> to each request (Content-Type and Accept)</li>
+                                <li>All requests require proper OAuth 1.0 authentication to access NetSuite data</li>
+                            </ul>
+                        </div>
+
+                        <div style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 1rem; margin: 1.5rem 0; border-radius: 4px;">
+                            <h4 style="color: #991b1b; margin-bottom: 0.5rem; font-weight: 600;">Common Error: 400 Bad Request</h4>
+                            <div class="code-block" style="margin: 1rem 0;"><pre>error code: UNEXPECTED_ERROR
+error message: An unexpected SuiteScript error has occurred</pre></div>
+                            <p style="color: #7f1d1d; margin-bottom: 0.5rem; font-weight: 500;">This error typically occurs when:</p>
+                            <ul style="margin-left: 1.5rem; color: #7f1d1d;">
+                                <li>OAuth 1.0 credentials are missing or incorrect</li>
+                                <li>The <strong>Content-Type</strong> and <strong>Accept</strong> headers are not added manually</li>
+                                <li>The NetSuite account doesn't have access to the script</li>
+                                <li>The script deployment is not active or accessible</li>
+                            </ul>
+                            <p style="color: #7f1d1d; margin-top: 0.75rem; font-weight: 500;">Solution:</p>
+                            <ul style="margin-left: 1.5rem; color: #7f1d1d;">
+                                <li>Double-check all OAuth 1.0 credentials are entered correctly</li>
+                                <li><strong>Manually add headers</strong> in the Headers tab: Content-Type and Accept as application/json</li>
+                                <li>Check that both OAuth checkboxes are enabled in Postman</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ENDPOINT 1: GET Invoice Payments -->
+            <div class="endpoint">
+                <div class="endpoint-header" id="header-2" onclick="toggleEndpoint(2)">
+                    <span class="method-badge method-get">GET</span>
+                    <span class="endpoint-url">https://11375429-sb2.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=1353&deploy=1&type=InvoicePayments</span>
+                    <span class="endpoint-toggle" id="toggle-2">▼</span>
+                </div>
+                <div class="endpoint-body" id="body-2">
+                    <!-- API Overview -->
+                    <div style="background: #f0f9ff; border-left: 4px solid #0284c7; padding: 1rem; margin-bottom: 2rem; border-radius: 4px;">
+                        <h4 style="color: #0c4a6e; margin-bottom: 0.5rem; font-weight: 600;">Endpoint Overview</h4>
+                        <p style="color: #075985; line-height: 1.7; margin-bottom: 0.5rem;">
+                            This endpoint retrieves invoice records along with their associated payment transactions. Each invoice includes complete header information and an array of related payment records, showing both deposits and applications to invoices.
+                        </p>
+                    </div>
+
+                    <!-- Query Parameters Section -->
+                    <div class="section">
+                        <div class="section-title">Query Parameters</div>
+                        <table class="param-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%;">Key</th>
+                                    <th style="width: 30%;">Value</th>
+                                    <th style="width: 50%;">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">Script</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">1353</code></td>
+                                    <td>Script internal ID</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">deploy</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">1</code></td>
+                                    <td>Script deployment ID</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">type</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">InvoicePayments</code></td>
+                                    <td>Request type identifier for invoice payments endpoint</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Headers Section -->
+                    <div class="section">
+                        <div class="section-title">Headers <span style="color: #dc2626; font-size: 0.9rem;">(Must be manually added in Postman)</span></div>
+                        <table class="param-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%;">Key</th>
+                                    <th style="width: 35%;">Value</th>
+                                    <th style="width: 40%;">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">Content-Type</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">application/json</code></td>
+                                    <td>Request content type</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">Accept</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">application/json</code></td>
+                                    <td>Expected response content type</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">Authorization</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">OAuth oauth_consumer_key="...", oauth_token="..."</code></td>
+                                    <td>OAuth 1.0 authentication header (auto-generated by Postman)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin-top: 1rem; border-radius: 4px;">
+                            <p style="font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">⚠️ Important:</p>
+                            <p style="color: #78350f; font-size: 0.9rem;">You <strong>must manually add</strong> the Content-Type and Accept headers in the Headers tab. The Authorization header is automatically generated when OAuth 1.0 is configured, but Content-Type and Accept are NOT added automatically.</p>
+                        </div>
+                    </div>
+
+                    <!-- Responses Section -->
+                    <div class="section response-section">
+                        <div class="section-title">Responses</div>
+                        
+                        <!-- 200 Response -->
+                        <div class="response-code">
+                            <div class="response-code-header">
+                                <span class="response-status">200</span>
+                                <span class="response-desc">OK</span>
+                            </div>
+                            <p style="margin-top: 0.5rem; color: #6b7280; font-size: 0.875rem;">Successfully retrieved invoice and payment data.</p>
+                            
+                            <label for="response-media-2" style="display: block; margin: 1rem 0 0.5rem; font-weight: 500; color: #374151;">Media type:</label>
+                            <select id="response-media-2" class="media-type-select">
+                                <option value="application/json">application/json</option>
+                            </select>
+
+                            <div style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Example Value | Schema</div>
+                            <div class="code-block"><pre>{
+  <span class="property">"success"</span>: <span class="boolean">true</span>,
+  <span class="property">"message"</span>: <span class="string">"string"</span>,
+  <span class="property">"timestamp"</span>: <span class="string">"string"</span>,
+  <span class="property">"type"</span>: <span class="string">"string"</span>,
+  <span class="property">"totalRecords"</span>: <span class="number">0</span>,
+  <span class="property">"data"</span>: [
+    {
+      <span class="property">"internalId"</span>: <span class="string">"string"</span>,
+      <span class="property">"orderType"</span>: <span class="string">"string"</span>,
+      <span class="property">"tranDate"</span>: <span class="string">"string"</span>,
+      <span class="property">"asOfDate"</span>: <span class="string">"string"</span>,
+      <span class="property">"period"</span>: <span class="string">"string"</span>,
+      <span class="property">"taxPeriod"</span>: <span class="string">"string"</span>,
+      <span class="property">"type"</span>: <span class="string">"string"</span>,
+      <span class="property">"tranId"</span>: <span class="string">"string"</span>,
+      <span class="property">"entity"</span>: <span class="string">"string"</span>,
+      <span class="property">"entityId"</span>: <span class="string">"string"</span>,
+      <span class="property">"account"</span>: <span class="string">"string"</span>,
+      <span class="property">"accountId"</span>: <span class="string">"string"</span>,
+      <span class="property">"memo"</span>: <span class="string">"string"</span>,
+      <span class="property">"amount"</span>: <span class="number">0</span>,
+      <span class="property">"payments"</span>: [
+        {
+          <span class="property">"internalId"</span>: <span class="string">"string"</span>,
+          <span class="property">"tranDate"</span>: <span class="string">"string"</span>,
+          <span class="property">"amount"</span>: <span class="number">0</span>,
+          <span class="property">"bankAccountNumber"</span>: <span class="string">"string"</span>
+        }
+      ]
+    }
+  ]
+}</pre></div>
+                        </div>
+
+                        <!-- 204 Response -->
+                        <div class="response-code error">
+                            <div class="response-code-header">
+                                <span class="response-status">204</span>
+                                <span class="response-desc">No Content</span>
+                            </div>
+                            <p style="margin-top: 0.5rem; color: #6b7280; font-size: 0.875rem;">No records found matching the criteria.</p>
+                        </div>
+                    </div>
+
+                    <!-- Notes Section -->
+                    <div class="notes">
+                        <h4>Notes</h4>
+                        <ul>
+                            <li>The API filters transactions created today (datecreated: 'within', 'today')</li>
+                            <li>Each invoice includes an array of associated payments</li>
+                            <li>Payment amounts show both the deposit (positive amount) and the application to invoice (negative amount)</li>
+                            <li>All dates are returned in DD/MM/YYYY format</li>
+                            <li>Timestamps are in ISO 8601 format</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ENDPOINT 2: GET Invoices -->
+            <div class="endpoint">
+                <div class="endpoint-header" id="header-3" onclick="toggleEndpoint(3)">
+                    <span class="method-badge method-get">GET</span>
+                    <span class="endpoint-url">https://11375429-sb2.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=1353&deploy=1&type=invoice</span>
+                    <span class="endpoint-toggle" id="toggle-3">▼</span>
+                </div>
+                <div class="endpoint-body" id="body-3">
+                    <!-- API Overview -->
+                    <div style="background: #f0f9ff; border-left: 4px solid #0284c7; padding: 1rem; margin-bottom: 2rem; border-radius: 4px;">
+                        <h4 style="color: #0c4a6e; margin-bottom: 0.5rem; font-weight: 600;">Endpoint Overview</h4>
+                        <p style="color: #075985; line-height: 1.7; margin-bottom: 0.5rem;">
+                            This endpoint retrieves detailed invoice records including all line items with their associated classification dimensions (class, department, location). Each invoice provides comprehensive billing information suitable for accounting and reporting purposes.
+                        </p>
+                    </div>
+
+                    <!-- Query Parameters Section -->
+                    <div class="section">
+                        <div class="section-title">Query Parameters</div>
+                        <table class="param-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%;">Key</th>
+                                    <th style="width: 30%;">Value</th>
+                                    <th style="width: 50%;">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">Script</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">1353</code></td>
+                                    <td>Script internal ID</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">deploy</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">1</code></td>
+                                    <td>Script deployment ID</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">type</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">invoice</code></td>
+                                    <td>Request type identifier for invoices endpoint</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Headers Section -->
+                    <div class="section">
+                        <div class="section-title">Headers</div>
+                        <table class="param-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%;">Key</th>
+                                    <th style="width: 35%;">Value</th>
+                                    <th style="width: 40%;">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">Content-Type</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">application/json</code></td>
+                                    <td>Request content type</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">Accept</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">application/json</code></td>
+                                    <td>Expected response content type</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">Authorization</span></td>
+                                    <td><code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">OAuth oauth_consumer_key="...", oauth_token="..."</code></td>
+                                    <td>OAuth 1.0 authentication header (auto-generated)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p style="margin-top: 0.75rem; color: #6b7280; font-size: 0.875rem;"><em>Note: The Authorization header is automatically generated when using OAuth 1.0 authentication in Postman.</em></p>
+                    </div>
+
+                    <!-- Responses Section -->
+                    <div class="section response-section">
+                        <div class="section-title">Responses</div>
+                        
+                        <!-- 200 Response -->
+                        <div class="response-code">
+                            <div class="response-code-header">
+                                <span class="response-status">200</span>
+                                <span class="response-desc">OK</span>
+                            </div>
+                            <p style="margin-top: 0.5rem; color: #6b7280; font-size: 0.875rem;">Successfully retrieved invoice data.</p>
+                            
+                            <label for="response-media-3" style="display: block; margin: 1rem 0 0.5rem; font-weight: 500; color: #374151;">Media type:</label>
+                            <select id="response-media-3" class="media-type-select">
+                                <option value="application/json">application/json</option>
+                            </select>
+
+                            <div style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Example Value | Schema</div>
+                            <div class="code-block"><pre>{
+  <span class="property">"success"</span>: <span class="boolean">true</span>,
+  <span class="property">"message"</span>: <span class="string">"string"</span>,
+  <span class="property">"timestamp"</span>: <span class="string">"string"</span>,
+  <span class="property">"type"</span>: <span class="string">"string"</span>,
+  <span class="property">"totalRecords"</span>: <span class="number">0</span>,
+  <span class="property">"data"</span>: [
+    {
+      <span class="property">"internalId"</span>: <span class="string">"string"</span>,
+      <span class="property">"invoiceNumber"</span>: <span class="string">"string"</span>,
+      <span class="property">"invoiceDate"</span>: <span class="string">"string"</span>,
+      <span class="property">"dueDate"</span>: <span class="string">"string"</span>,
+      <span class="property">"customer"</span>: <span class="string">"string"</span>,
+      <span class="property">"customerId"</span>: <span class="string">"string"</span>,
+      <span class="property">"memo"</span>: <span class="string">"string"</span>,
+      <span class="property">"status"</span>: <span class="string">"string"</span>,
+      <span class="property">"lines"</span>: [
+        {
+          <span class="property">"lineNumber"</span>: <span class="string">"string"</span>,
+          <span class="property">"item"</span>: <span class="string">"string"</span>,
+          <span class="property">"account"</span>: <span class="string">"string"</span>,
+          <span class="property">"amount"</span>: <span class="number">0</span>,
+          <span class="property">"quantity"</span>: <span class="number">0</span>,
+          <span class="property">"rate"</span>: <span class="number">0</span>,
+          <span class="property">"class"</span>: <span class="string">"string"</span>,
+          <span class="property">"department"</span>: <span class="string">"string"</span>,
+          <span class="property">"location"</span>: <span class="string">"string"</span>
+        }
+      ]
+    }
+  ]
+}</pre></div>
+                        </div>
+
+                        <!-- 204 Response -->
+                        <div class="response-code error">
+                            <div class="response-code-header">
+                                <span class="response-status">204</span>
+                                <span class="response-desc">No Content</span>
+                            </div>
+                            <p style="margin-top: 0.5rem; color: #6b7280; font-size: 0.875rem;">No records found matching the criteria.</p>
+                        </div>
+                    </div>
+
+                    <!-- Notes Section -->
+                    <div class="notes">
+                        <h4>Notes</h4>
+                        <ul>
+                            <li>Each invoice includes an array of line items with detailed information</li>
+                            <li>Invoice dates and due dates are returned in DD/MM/YYYY format</li>
+                            <li>Timestamps are in ISO 8601 format</li>
+                            <li>Line items include quantity, rate, and calculated amounts</li>
+                            <li>Classification dimensions (class, department, location) are included for each line</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; NetSuite API Reference Guide. All rights reserved.</p>
+        <p>Last Updated: November 2025</p>
+    </div>
+</body>
+</html>
